@@ -27,7 +27,5 @@ int main(int argc, char* argv[]) {
         popup.updateHistory(text);
     });
 
-  
-
     return app.exec();
 }
