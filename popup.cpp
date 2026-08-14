@@ -1,10 +1,14 @@
+#include <iostream>
+
 #include <QWidget>
 #include <QListWidget>
 #include <QClipboard>
 #include <QVBoxLayout>
-#include <QApplication>
 #include <QStringList>
-#include <QShortcut>
+#include <QGuiApplication>
+#include <QScreen>
+#include <QRect>
+#include <QtGlobal>
 
 #include <qhotkey.h>
 
@@ -44,7 +48,6 @@ HistoryPopup::HistoryPopup(QClipboard* clipboard, QWidget* parent)
 
     layout->addWidget(list);
 
-
     setLayout(layout);
 
     // Assign selected clipboard history (click/enter) to your clipboard and close the popup
@@ -76,10 +79,23 @@ void HistoryPopup::updateHistory(const QString str) {
     history.push_back(str);
 }
 
+void HistoryPopup::moveToClamped(const QPoint& pos) {
+    QScreen* screen = QGuiApplication::screenAt(pos); // Uses screenAt here for multi-monitor setups
+    if (!screen) screen = QGuiApplication::primaryScreen(); // Defaults to primary screen if unable to get one.
+    QRect screenRect = screen->availableGeometry();
+
+    int x = qMin(pos.x(), screenRect.width() - WindowWidth);
+    int y = qMin(pos.y(), screenRect.height() - WindowHeight);
+
+    move(x,y);
+
+}
+
 // Updates list with new history, places popup at cursor, and shows it for user.
 void HistoryPopup::open() {
     refresh(); // Update popup with current history
-    move(QCursor::pos()); // Places popup on cursor, at the bottom-left corner
+    std::cout << "popup size: " << width() << "x" << height() << std::endl;
+    moveToClamped(QCursor::pos());
     show(); // Shows popup
 }
 

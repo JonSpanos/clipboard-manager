@@ -3,13 +3,6 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QObject>
-#include <QVector>
-#include <QWidget>
-#include <QListWidget>
-#include <QVBoxLayout>
-#include <QCursor>
-#include <QShortcut>
-#include <QKeySequence>
 
 #include "popup.hpp"    
 

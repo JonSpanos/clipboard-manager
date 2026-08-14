@@ -15,9 +15,12 @@ class HistoryPopup : public QWidget {
         // update list on GUI
         void updateHistory(const QString str);
 
+
     private:
-        void refresh();
-        void open();
+        
+        void moveToClamped(const QPoint& pos); // move function that clamps window at screen borders
+        void refresh(); // update history
+        void open(); // open popup visual
         QListWidget* list;
         QStringList history;
 };
