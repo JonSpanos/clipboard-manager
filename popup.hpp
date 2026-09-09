@@ -22,6 +22,7 @@ class HistoryPopup : public QWidget {
         void refresh(); // update history
         void open(); // open popup visual
         QListWidget* list;
+        QMap<QString, bool> pinned_history;
         QStringList history;
 };
 

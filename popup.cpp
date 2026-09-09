@@ -80,6 +80,7 @@ void HistoryPopup::updateHistory(const QString str) {
         history.move(idx, history.length()-1);
         return;
     }
+    pinned_history[str] = false;
     history.push_back(str);
 }
 
@@ -105,20 +106,62 @@ void HistoryPopup::open() {
 // update list on GUI
 void HistoryPopup::refresh() {
     list->clear();
+
+    QPixmap pin_pixmap("src/img/pin_icon.png");
+    QPixmap pinned_pixmap("src/img/pinned_icon.png");
+
+    for (auto i = history.rbegin(); i != history.rend(); i++) {
+        if (pinned_history[*i] == false) continue; // Skip unpinned
+        QListWidgetItem* item = new QListWidgetItem(*i);
+
+        QPushButton* pin_button = new QPushButton();
+
+        QIcon button_icon(pinned_pixmap);
+
+        pin_button->setIcon(button_icon);
+        pin_button->setFixedSize(WindowWidth/15, WindowWidth/15);
+        pin_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+        // Button Functionality
+        QObject::connect(pin_button, &QPushButton::clicked, [=](){
+            if (pinned_history[*i] == false ) {
+                pinned_history[*i] = true;
+                refresh();
+            } else {
+                pinned_history[*i] = false;
+                refresh();
+            }
+        });
+        
+        list->addItem(item);
+        list->setItemWidget(item, pin_button);
+    }
+
     for (auto i = history.rbegin(); i != history.rend(); i++) {
     //     auto* it = new QListWidgetItem(*i);
     //     it->setSizeHint(QSize(WindowWidth, WindowHeight/4));
     //     list->addItem(it);
         // Building a custom widget to hold text and pin button
-        
+        if (pinned_history[*i] == true) continue; // Skip pinned ones
         QListWidgetItem* item = new QListWidgetItem(*i);
 
         QPushButton* pin_button = new QPushButton();
-        QIcon button_icon(QPixmap("src/img/pin_icon.png"));
+        QIcon button_icon(pin_pixmap);
 
         pin_button->setIcon(button_icon);
         pin_button->setFixedSize(WindowWidth/15, WindowWidth/15);
         pin_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+        // Button Functionality
+        QObject::connect(pin_button, &QPushButton::clicked, [=](){
+            if (pinned_history[*i] == false ) {
+                pinned_history[*i] = true;
+                refresh();
+            } else {
+                pinned_history[*i] = false;
+                refresh();
+            }
+        });
         
         list->addItem(item);
         list->setItemWidget(item, pin_button);
