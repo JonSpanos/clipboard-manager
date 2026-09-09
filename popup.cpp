@@ -3,12 +3,16 @@
 #include <QWidget>
 #include <QListWidget>
 #include <QClipboard>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QStringList>
 #include <QGuiApplication>
 #include <QScreen>
 #include <QRect>
 #include <QtGlobal>
+
+#include <QLabel>
+#include <QPushButton>
+#include <QPixmap>
 
 #include <qhotkey.h>
 
@@ -94,8 +98,7 @@ void HistoryPopup::moveToClamped(const QPoint& pos) {
 // Updates list with new history, places popup at cursor, and shows it for user.
 void HistoryPopup::open() {
     refresh(); // Update popup with current history
-    std::cout << "popup size: " << width() << "x" << height() << std::endl;
-    moveToClamped(QCursor::pos());
+    moveToClamped(QCursor::pos()); // Move popup to cursor (Clamped to avoid showing up outside of borders)
     show(); // Shows popup
 }
 
@@ -103,8 +106,21 @@ void HistoryPopup::open() {
 void HistoryPopup::refresh() {
     list->clear();
     for (auto i = history.rbegin(); i != history.rend(); i++) {
-        auto* it = new QListWidgetItem(*i);
-        it->setSizeHint(QSize(WindowWidth, WindowHeight/4));
-        list->addItem(it);
+    //     auto* it = new QListWidgetItem(*i);
+    //     it->setSizeHint(QSize(WindowWidth, WindowHeight/4));
+    //     list->addItem(it);
+        // Building a custom widget to hold text and pin button
+        
+        QListWidgetItem* item = new QListWidgetItem(*i);
+
+        QPushButton* pin_button = new QPushButton();
+        QIcon button_icon(QPixmap("src/img/pin_icon.png"));
+
+        pin_button->setIcon(button_icon);
+        pin_button->setFixedSize(WindowWidth/15, WindowWidth/15);
+        pin_button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        
+        list->addItem(item);
+        list->setItemWidget(item, pin_button);
     }
 }
